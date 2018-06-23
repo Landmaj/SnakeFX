@@ -1,13 +1,14 @@
 package Fnake;
 
 class GameOptions {
-    static final GameSize SMALL = new GameSize(30, 30);
-    static final GameSize MEDIUM = new GameSize(50, 50);
-    static final GameSize LARGE = new GameSize(80, 80);
+    static final GameSize SMALL = new GameSize(20, 20);
+    static final GameSize MEDIUM = new GameSize(30, 30);
+    static final GameSize LARGE = new GameSize(50, 50);
+    static final GameSize ENORMOUS = new GameSize(120, 90);
 
-    static final GameSpeed FAST = new GameSpeed(100, "fast");
-    static final GameSpeed NORMAL = new GameSpeed(150, "normal");
-    static final GameSpeed SLOW = new GameSpeed(200, "slow");
+    static final GameSpeed FAST = new GameSpeed(75, "fast");
+    static final GameSpeed NORMAL = new GameSpeed(125, "normal");
+    static final GameSpeed SLOW = new GameSpeed(300, "slow");
 }
 
 class GameSize extends Tuple {

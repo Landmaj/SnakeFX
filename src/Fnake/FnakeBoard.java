@@ -202,6 +202,7 @@ public class FnakeBoard extends Application {
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.LEFT);
         gc.fillText("Score: " + String.valueOf(this.score), 5, height - 10);
+        gc.fillText(String.valueOf(this.snake.size()), 5, 5);
         gc.setTextAlign(TextAlignment.RIGHT);
         gc.fillText("Press [Ctrl]+[C] to exit", width-5, height - 10);
     }
@@ -283,6 +284,11 @@ public class FnakeBoard extends Application {
                 this.score += 10;
                 break;
             case BONUS:
+                if (this.snake.size()>1) {
+                    Tuple toRemove = this.snake.get(0);
+                    this.matrix[toRemove.getX()][toRemove.getY()] = 0;
+                    this.snake.remove(0);
+                }
                 moveSnake(tuple);
                 this.score += 10;
             default:

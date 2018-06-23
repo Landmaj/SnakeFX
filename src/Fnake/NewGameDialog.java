@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
+import java.lang.management.GarbageCollectorMXBean;
 import java.util.Optional;
 
 class NewGameDialog {
@@ -23,7 +24,8 @@ class NewGameDialog {
                 FXCollections.observableArrayList(
                         GameOptions.SMALL,
                         GameOptions.MEDIUM,
-                        GameOptions.LARGE
+                        GameOptions.LARGE,
+                        GameOptions.ENORMOUS
                 )
         );
         gameSize.getSelectionModel().select(1);
