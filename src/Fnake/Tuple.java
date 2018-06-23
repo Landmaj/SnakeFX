@@ -16,4 +16,5 @@ class Tuple {
     int getY() {
         return y;
     }
+
 }

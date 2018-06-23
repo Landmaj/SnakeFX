@@ -21,7 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 public class FnakeBoard extends Application {
     private int tileSize = 10;
-    private int speed = 150;
+    private int speed;
+    private String name;
 
     private int width;
     private int height;
@@ -50,9 +51,12 @@ public class FnakeBoard extends Application {
     private boolean pause = true;
 
 
-    FnakeBoard(int columns, int rows) {
+    FnakeBoard(int columns, int rows, int speed, String name) {
         this.width = columns * this.tileSize;
-        this.height = rows * this.tileSize;
+        this.height = rows * this.tileSize + 20;
+
+        this.speed = speed;
+        this.name = name;
 
         this.matrix = new int[columns][rows];
 
@@ -66,7 +70,6 @@ public class FnakeBoard extends Application {
         Group root = new Group();
         Canvas canvas = new Canvas(this.width, this.height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
         root.getChildren().addAll(canvas);
         Scene scene = new Scene(root);
@@ -101,6 +104,9 @@ public class FnakeBoard extends Application {
 
             public void handle(KeyEvent ke) {
                 if (keyComb.match(ke)) {
+                    if(pause) {
+                        endGame(primaryStage);
+                    }
                     pause = true;
                 }
             }
@@ -146,6 +152,7 @@ public class FnakeBoard extends Application {
     }
 
     private void startScreen(GraphicsContext gc) {
+        gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText(
                 "Use arrow keys ←↑↓→ to turn.",
                 Math.round(width / 2),
@@ -190,15 +197,20 @@ public class FnakeBoard extends Application {
                 );
             }
         }
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, height - 20, width, height);
         gc.setFill(Color.BLACK);
-        gc.fillText("Score: " + String.valueOf(this.score), Math.round(width/2), 10);
+        gc.setTextAlign(TextAlignment.LEFT);
+        gc.fillText("Score: " + String.valueOf(this.score), 5, height - 10);
+        gc.setTextAlign(TextAlignment.RIGHT);
+        gc.fillText("Press [Ctrl]+[C] to exit", width-5, height - 10);
     }
 
     private void endScreen(GraphicsContext gc) {
         gc.setStroke(Color.DARKRED);
         gc.setLineWidth(4);
-        gc.strokeLine(0, 0, width, height);
-        gc.strokeLine(0, height, width, 0);
+        gc.strokeLine(0, 0, width, height-20);
+        gc.strokeLine(0, height-20, width, 0);
     }
 
     private Tuple nextTile(Tuple currentTile) {
@@ -284,6 +296,10 @@ public class FnakeBoard extends Application {
         }
         Tuple nextTile = nextTile(this.snake.get(this.snake.size() - 1));
         checkNextTile(nextTile);
+    }
+
+    private void endGame(Stage stage) {
+        stage.close();
     }
 
 
