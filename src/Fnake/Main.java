@@ -11,7 +11,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        FnakeBoard board = new FnakeBoard(40, 30);
+        FnakeBoard board = new FnakeBoard(30, 30);
         board.start(new Stage());
     }
 }
