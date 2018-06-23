@@ -2,6 +2,7 @@ package Fnake;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -11,6 +12,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ public class FnakeBoard extends Application {
 
     private int direction = NORTH;
 
-    private boolean pause = false;
+    private boolean pause = true;
 
 
     FnakeBoard(int columns, int rows) {
@@ -60,10 +62,12 @@ public class FnakeBoard extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Fnake Game");
+        primaryStage.setTitle("SnakeFX");
         Group root = new Group();
         Canvas canvas = new Canvas(this.width, this.height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setTextBaseline(VPos.CENTER);
         root.getChildren().addAll(canvas);
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -72,6 +76,8 @@ public class FnakeBoard extends Application {
 
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
+                case ENTER:
+                    pause = false;
                 case UP:
                     direction = (direction == SOUTH) ? SOUTH : NORTH;
                     break;
@@ -113,6 +119,17 @@ public class FnakeBoard extends Application {
     }
 
     private void runTask(GraphicsContext gc) {
+
+        drawBoard(gc);
+        startScreen(gc);
+        while (pause) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(this.speed);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         while (!pause) {
             gameLoop();
             drawBoard(gc);
@@ -124,6 +141,26 @@ public class FnakeBoard extends Application {
 
         }
 
+        endScreen(gc);
+
+    }
+
+    private void startScreen(GraphicsContext gc) {
+        gc.fillText(
+                "Use arrow keys ←↑↓→ to turn.",
+                Math.round(width / 2),
+                Math.round(height / 2 - 30)
+        );
+        gc.fillText(
+                "Press [Enter] to start",
+                Math.round(width / 2),
+                Math.round(height / 2)
+        );
+        gc.fillText(
+                "or [Ctrl] + [C] to exit.",
+                Math.round(width / 2),
+                Math.round(height / 2 + 15)
+        );
     }
 
     private void drawBoard(GraphicsContext gc) {
@@ -131,16 +168,16 @@ public class FnakeBoard extends Application {
             for (int y = 0; y < this.matrix[0].length; y++) {
                 switch (this.matrix[x][y]) {
                     case SNAKE:
-                        gc.setFill(Color.RED);
+                        gc.setFill(Color.BLACK);
                         break;
                     case FOOD:
                         gc.setFill(Color.GREEN);
                         break;
                     case BONUS:
-                        gc.setFill(Color.DARKGREEN);
+                        gc.setFill(Color.DARKBLUE);
                         break;
                     case COLLISION:
-                        gc.setFill(Color.BLACK);
+                        gc.setFill(Color.RED);
                         break;
                     default:
                         gc.setFill(Color.WHITE);
@@ -154,7 +191,14 @@ public class FnakeBoard extends Application {
             }
         }
         gc.setFill(Color.BLACK);
-        gc.fillText("Score: " + String.valueOf(this.score), 10, 10);
+        gc.fillText("Score: " + String.valueOf(this.score), Math.round(width/2), 10);
+    }
+
+    private void endScreen(GraphicsContext gc) {
+        gc.setStroke(Color.DARKRED);
+        gc.setLineWidth(4);
+        gc.strokeLine(0, 0, width, height);
+        gc.strokeLine(0, height, width, 0);
     }
 
     private Tuple nextTile(Tuple currentTile) {
@@ -241,5 +285,6 @@ public class FnakeBoard extends Application {
         Tuple nextTile = nextTile(this.snake.get(this.snake.size() - 1));
         checkNextTile(nextTile);
     }
+
 
 }
