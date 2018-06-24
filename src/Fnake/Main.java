@@ -60,7 +60,8 @@ public class Main extends Application {
                         result.gameSize.getX(),
                         result.gameSize.getY(),
                         result.speed.getSpeed(),
-                        result.name
+                        result.name,
+                        result.infinite
                 );
                 board.start(new Stage());
             }

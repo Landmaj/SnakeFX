@@ -24,8 +24,7 @@ class NewGameDialog {
                 FXCollections.observableArrayList(
                         GameOptions.SMALL,
                         GameOptions.MEDIUM,
-                        GameOptions.LARGE,
-                        GameOptions.ENORMOUS
+                        GameOptions.LARGE
                 )
         );
         gameSize.getSelectionModel().select(1);
@@ -40,6 +39,9 @@ class NewGameDialog {
         );
         gameSpeed.getSelectionModel().select(1);
 
+        Label infiniteLabel = new Label("Wall collision: ");
+        CheckBox infinite = new CheckBox();
+
 
         GridPane grid = new GridPane();
         grid.add(nameLabel, 1, 1);
@@ -48,6 +50,8 @@ class NewGameDialog {
         grid.add(gameSize, 2, 2);
         grid.add(gameSpeedLabel, 1, 3);
         grid.add(gameSpeed, 2, 3);
+        grid.add(infiniteLabel, 1, 4);
+        grid.add(infinite, 2, 4);
         grid.setVgap(10);
         dialog.getDialogPane().setContent(grid);
 
@@ -57,7 +61,12 @@ class NewGameDialog {
 
         Optional result = dialog.showAndWait();
         if (result.isPresent()) {
-            return new Result(nameField.getText(), gameSize.getValue(), gameSpeed.getValue());
+            return new Result(
+                    nameField.getText(),
+                    gameSize.getValue(),
+                    gameSpeed.getValue(),
+                    infinite.isSelected()
+            );
         } else return null;
 
     }
@@ -68,11 +77,13 @@ class Result {
     String name;
     Tuple gameSize;
     GameSpeed speed;
+    boolean infinite;
 
-    Result(String name, Tuple gameSize, GameSpeed speed) {
+    Result(String name, Tuple gameSize, GameSpeed speed, boolean infinite) {
         this.name = name;
         this.gameSize = gameSize;
         this.speed = speed;
+        this.infinite = infinite;
     }
 
 }

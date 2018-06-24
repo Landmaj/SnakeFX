@@ -15,14 +15,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FnakeBoard extends Application {
     private int tileSize = 10;
-    private int speed;
-    private String name;
+
+    private Score player;
 
     private int width;
     private int height;
@@ -32,7 +33,6 @@ public class FnakeBoard extends Application {
     private List<Tuple> empties = new ArrayList<>();
 
     private Tuple food;
-    private Tuple bonus;
     private int score = 0;
 
     private final int BOARD = 0;
@@ -46,22 +46,23 @@ public class FnakeBoard extends Application {
     private final int WEST = 2;
     private final int EAST = 3;
 
+    private int speed;
     private int direction = NORTH;
-
     private boolean pause = true;
+    private boolean infinite;
+    private long epoch;
 
 
-    FnakeBoard(int columns, int rows, int speed, String name) {
+    FnakeBoard(int columns, int rows, int speed, String name, boolean infinite) {
         this.width = columns * this.tileSize;
-        this.height = rows * this.tileSize + 20;
-
+        this.height = rows * this.tileSize + 40;
         this.speed = speed;
-        this.name = name;
-
         this.matrix = new int[columns][rows];
-
         this.snake.add(new Tuple(columns / 2, rows - 1));
         this.matrix[columns / 2][rows - 1] = 1;
+        this.infinite = !infinite;
+
+        this.player = new Score(name, 0, 0, infinite);
     }
 
     @Override
@@ -104,7 +105,7 @@ public class FnakeBoard extends Application {
 
             public void handle(KeyEvent ke) {
                 if (keyComb.match(ke)) {
-                    if(pause) {
+                    if (pause) {
                         endGame(primaryStage);
                     }
                     pause = true;
@@ -136,8 +137,10 @@ public class FnakeBoard extends Application {
             }
         }
 
+        this.epoch = Instant.now().getEpochSecond();
         while (!pause) {
             gameLoop();
+            this.player.setSeconds((int) (Instant.now().getEpochSecond() - this.epoch));
             drawBoard(gc);
             try {
                 TimeUnit.MILLISECONDS.sleep(this.speed);
@@ -150,6 +153,7 @@ public class FnakeBoard extends Application {
         endScreen(gc);
 
     }
+
 
     private void startScreen(GraphicsContext gc) {
         gc.setTextAlign(TextAlignment.CENTER);
@@ -191,48 +195,86 @@ public class FnakeBoard extends Application {
                 }
                 gc.fillRect(
                         x * this.tileSize,
-                        y * this.tileSize,
+                        y * this.tileSize + 20,
                         this.tileSize,
                         this.tileSize
                 );
             }
         }
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, height - 20, width, height);
+
+        if (!infinite) {
+            gc.setLineWidth(2);
+            gc.setStroke(Color.DARKRED);
+            gc.strokeRect(0, 20, width, height - 40);
+        }
+
+        gc.setFill(Color.LIGHTGRAY);
+        gc.fillRect(0, 0, width, 20);
+        gc.fillRect(0, height - 20, width, 20);
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.LEFT);
-        gc.fillText("Score: " + String.valueOf(this.score), 5, height - 10);
-        gc.fillText(String.valueOf(this.snake.size()), 5, 5);
+        gc.fillText("Score: " + String.valueOf(this.player.getScore()), 5, height - 10);
+        gc.fillText("Length: " + String.valueOf(this.snake.size()), 5, 10);
         gc.setTextAlign(TextAlignment.RIGHT);
-        gc.fillText("Press [Ctrl]+[C] to exit", width-5, height - 10);
+        int minutes = this.player.getSeconds() / 60;
+        int seconds = this.player.getSeconds() % 60;
+        gc.fillText("Time: " + minutes + ":" + seconds, width - 5, 10);
+        gc.fillText("Press [Ctrl]+[C] to exit", width - 5, height - 10);
     }
 
     private void endScreen(GraphicsContext gc) {
         gc.setStroke(Color.DARKRED);
         gc.setLineWidth(4);
-        gc.strokeLine(0, 0, width, height-20);
-        gc.strokeLine(0, height-20, width, 0);
+        gc.strokeLine(0, 20, width, height - 20);
+        gc.strokeLine(0, height - 20, width, 20);
     }
 
     private Tuple nextTile(Tuple currentTile) {
         switch (this.direction) {
             case SOUTH:
-                int var = this.matrix[0].length;
                 if (currentTile.getY() < this.matrix[0].length - 1) {
                     return new Tuple(currentTile.getX(), currentTile.getY() + 1);
-                } else return new Tuple(currentTile.getX(), 0);
+                } else {
+                    if (infinite) {
+                        return new Tuple(currentTile.getX(), 0);
+                    } else {
+                        pause = true;
+                        return currentTile;
+                    }
+                }
             case EAST:
                 if (currentTile.getX() < this.matrix.length - 1) {
                     return new Tuple(currentTile.getX() + 1, currentTile.getY());
-                } else return new Tuple(0, currentTile.getY());
+                } else {
+                    if (infinite) {
+                        return new Tuple(0, currentTile.getY());
+                    } else {
+                        pause = true;
+                        return currentTile;
+                    }
+                }
             case WEST:
                 if (currentTile.getX() > 0) {
                     return new Tuple(currentTile.getX() - 1, currentTile.getY());
-                } else return new Tuple(this.matrix.length - 1, currentTile.getY());
+                } else {
+                    if (infinite) {
+                        return new Tuple(this.matrix.length - 1, currentTile.getY());
+                    } else {
+                        pause = true;
+                        return currentTile;
+                    }
+                }
             default: // NORTH
                 if (currentTile.getY() > 0) {
                     return new Tuple(currentTile.getX(), currentTile.getY() - 1);
-                } else return new Tuple(currentTile.getX(), this.matrix[0].length - 1);
+                } else {
+                    if (infinite) {
+                        return new Tuple(currentTile.getX(), this.matrix[0].length - 1);
+                    } else {
+                        pause = true;
+                        return currentTile;
+                    }
+                }
 
         }
     }
@@ -267,8 +309,8 @@ public class FnakeBoard extends Application {
         this.matrix[this.food.getX()][this.food.getY()] = FOOD;
 
         if ((int) (Math.random() * 10) == 7) {
-            this.bonus = this.empties.get((int) (Math.random() * this.empties.size()));
-            this.matrix[this.bonus.getX()][this.bonus.getY()] = BONUS;
+            Tuple bonus = this.empties.get((int) (Math.random() * this.empties.size()));
+            this.matrix[bonus.getX()][bonus.getY()] = BONUS;
         }
     }
 
@@ -281,16 +323,16 @@ public class FnakeBoard extends Application {
             case FOOD:
                 extendSnake(tuple);
                 generateFood();
-                this.score += 10;
+                this.player.addScore();
                 break;
             case BONUS:
-                if (this.snake.size()>1) {
+                if (this.snake.size() > 1) {
                     Tuple toRemove = this.snake.get(0);
                     this.matrix[toRemove.getX()][toRemove.getY()] = 0;
                     this.snake.remove(0);
                 }
                 moveSnake(tuple);
-                this.score += 10;
+                this.player.addScore();
             default:
                 moveSnake(tuple);
         }
