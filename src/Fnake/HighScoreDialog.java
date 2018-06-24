@@ -52,10 +52,10 @@ class HighScoreDialog {
         Main.scores.sortScores();
 
         List<Score> scores = Main.scores.getScores();
-        for (int i = 0; i < scores.size() || i == 9; i++) {
+        for (int i = 0; i < scores.size() && i < 10; i++) {
             Score score = scores.get(i);
-            Label playerPlace = new Label(String.valueOf(i+1));
-            grid.add(playerPlace, 1, i+2);
+            Label playerPlace = new Label(String.valueOf(i + 1));
+            grid.add(playerPlace, 1, i + 2);
             Label name = new Label(score.getName() + "");
             grid.add(name, 2, i + 2);
             Label playerScore = new Label(String.valueOf(score.getScore()));

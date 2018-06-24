@@ -17,17 +17,18 @@ import java.io.*;
 public class Main extends Application {
 
     static HighScore scores;
+    private String saveName = "highScore.save";
 
     public static void main(String[] args) {
         launch(args);
     }
 
     private HighScore loadHighScores() {
-        File f = new File("highScore.save");
+        File f = new File(saveName);
         if (f.exists() && !f.isDirectory()) {
             FileInputStream fins;
             try {
-                fins = new FileInputStream("gameSave.save");
+                fins = new FileInputStream(saveName);
                 ObjectInputStream oos = new ObjectInputStream(fins);
                 return (HighScore) oos.readObject();
             } catch (IOException | ClassNotFoundException e) {
@@ -103,7 +104,7 @@ public class Main extends Application {
 
             FileOutputStream fout;
             try {
-                fout = new FileOutputStream("highScore.save");
+                fout = new FileOutputStream(saveName);
                 ObjectOutputStream oos = new ObjectOutputStream(fout);
                 oos.writeObject(scores);
             } catch (IOException e) {
