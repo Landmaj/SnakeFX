@@ -18,6 +18,7 @@ public class Main extends Application {
 
     static HighScore scores;
     private String saveName = "highScore.save";
+    static String name = "Anonymous";
 
     public static void main(String[] args) {
         launch(args);

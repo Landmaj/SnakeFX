@@ -7,6 +7,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -353,14 +354,23 @@ public class FnakeBoard extends Application {
         if (this.player.getSeconds() != 0) {
             int finalScore = (this.player.getScore() * 100 - this.player.getSeconds());
             if (this.gameSize == GameOptions.SMALL) {
-                finalScore = (int) (finalScore * 2.25);
+                finalScore = (int) (finalScore * 1.5);
             } else if (this.gameSize == GameOptions.LARGE) {
-                finalScore = (int) (finalScore / 2.77777);
+                finalScore = (int) (finalScore / 0.5);
+            }
+            if (!infinite) {
+                finalScore = (int) (finalScore * 1.3);
             }
             this.player.setFinalScore(finalScore);
             Main.scores.addScore(this.player);
         }
 
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText("Game over, " + this.player.getName() + "!");
+        alert.setContentText("Your score: " + this.player.getFinalScore());
+
+        alert.showAndWait();
         stage.close();
     }
 

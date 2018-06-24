@@ -15,7 +15,7 @@ class NewGameDialog {
 
         Label nameLabel = new Label("Name:\t");
         TextField nameField = new TextField();
-        nameField.setText("Anonymous");
+        nameField.setText(Main.name);
 
         Label gameSizeLabel = new Label("Size:");
         ChoiceBox<GameSize> gameSize = new ChoiceBox<>(
@@ -57,6 +57,7 @@ class NewGameDialog {
 
         Optional result = dialog.showAndWait();
         if (result.isPresent()) {
+            Main.name = nameField.getText();
             return new Result(
                     nameField.getText(),
                     gameSize.getValue(),
