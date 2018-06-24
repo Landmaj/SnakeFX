@@ -4,11 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
-import java.lang.management.GarbageCollectorMXBean;
 import java.util.Optional;
 
 class NewGameDialog {
-
 
     static Result createDialog() {
         Dialog dialog = new Dialog();
@@ -20,7 +18,7 @@ class NewGameDialog {
         nameField.setText("Anonymous");
 
         Label gameSizeLabel = new Label("Size:");
-        ChoiceBox<Tuple> gameSize = new ChoiceBox<>(
+        ChoiceBox<GameSize> gameSize = new ChoiceBox<>(
                 FXCollections.observableArrayList(
                         GameOptions.SMALL,
                         GameOptions.MEDIUM,
@@ -42,7 +40,6 @@ class NewGameDialog {
         Label infiniteLabel = new Label("Wall collision: ");
         CheckBox infinite = new CheckBox();
 
-
         GridPane grid = new GridPane();
         grid.add(nameLabel, 1, 1);
         grid.add(nameField, 2, 1);
@@ -54,7 +51,6 @@ class NewGameDialog {
         grid.add(infinite, 2, 4);
         grid.setVgap(10);
         dialog.getDialogPane().setContent(grid);
-
 
         ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
@@ -75,11 +71,11 @@ class NewGameDialog {
 
 class Result {
     String name;
-    Tuple gameSize;
+    GameSize gameSize;
     GameSpeed speed;
     boolean infinite;
 
-    Result(String name, Tuple gameSize, GameSpeed speed, boolean infinite) {
+    Result(String name, GameSize gameSize, GameSpeed speed, boolean infinite) {
         this.name = name;
         this.gameSize = gameSize;
         this.speed = speed;

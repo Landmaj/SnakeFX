@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+
 public class FnakeBoard extends Application {
     private int tileSize = 10;
 
@@ -51,16 +52,18 @@ public class FnakeBoard extends Application {
     private boolean pause = true;
     private boolean infinite;
     private long epoch;
+    private GameSize gameSize;
 
 
-    FnakeBoard(int columns, int rows, int speed, String name, boolean infinite) {
-        this.width = columns * this.tileSize;
-        this.height = rows * this.tileSize + 40;
+    FnakeBoard(GameSize gameSize, int speed, String name, boolean infinite) {
+        this.width = gameSize.getX() * this.tileSize;
+        this.height = gameSize.getY() * this.tileSize + 40;
         this.speed = speed;
-        this.matrix = new int[columns][rows];
-        this.snake.add(new Tuple(columns / 2, rows - 1));
-        this.matrix[columns / 2][rows - 1] = 1;
+        this.matrix = new int[gameSize.getX()][gameSize.getY()];
+        this.snake.add(new Tuple(gameSize.getX() / 2, gameSize.getY() - 1));
+        this.matrix[gameSize.getX() / 2][gameSize.getY() - 1] = 1;
         this.infinite = !infinite;
+        this.gameSize = gameSize;
 
         this.player = new Score(name, 0, 0, infinite);
     }
@@ -213,8 +216,8 @@ public class FnakeBoard extends Application {
         gc.fillRect(0, height - 20, width, 20);
         gc.setFill(Color.BLACK);
         gc.setTextAlign(TextAlignment.LEFT);
-        gc.fillText("Score: " + String.valueOf(this.player.getScore()), 5, height - 10);
-        gc.fillText("Length: " + String.valueOf(this.snake.size()), 5, 10);
+        gc.fillText("Length: " + String.valueOf(this.snake.size()), 5, height - 10);
+        gc.fillText("Food: " + String.valueOf(this.player.getScore()), 5, 10);
         gc.setTextAlign(TextAlignment.RIGHT);
         int minutes = this.player.getSeconds() / 60;
         int seconds = this.player.getSeconds() % 60;
@@ -347,6 +350,17 @@ public class FnakeBoard extends Application {
     }
 
     private void endGame(Stage stage) {
+        if (this.player.getSeconds() != 0) {
+            int finalScore = (this.player.getScore() * 100 - this.player.getSeconds());
+            if (this.gameSize == GameOptions.SMALL) {
+                finalScore = (int) (finalScore * 2.25);
+            } else if (this.gameSize == GameOptions.LARGE) {
+                finalScore = (int) (finalScore / 2.77777);
+            }
+            this.player.setFinalScore(finalScore);
+            Main.scores.addScore(this.player);
+        }
+
         stage.close();
     }
 

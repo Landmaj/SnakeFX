@@ -10,8 +10,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+
 public class Main extends Application {
 
+    static HighScore scores;
 
     public static void main(String[] args) {
         launch(args);
@@ -53,18 +55,23 @@ public class Main extends Application {
         primaryStage.setWidth(500);
         primaryStage.show();
 
+        scores = new HighScore();
+
         newGame.setOnAction(event -> {
             Result result = NewGameDialog.createDialog();
             if (result != null) {
                 FnakeBoard board = new FnakeBoard(
-                        result.gameSize.getX(),
-                        result.gameSize.getY(),
+                        result.gameSize,
                         result.speed.getSpeed(),
                         result.name,
                         result.infinite
                 );
                 board.start(new Stage());
             }
+        });
+
+        highScores.setOnAction(event -> {
+            HighScoreDialog.createDialog();
         });
 
         exitGame.setOnAction(event -> System.exit(0));

@@ -1,11 +1,13 @@
 package Fnake;
 
-class Score {
+import java.io.Serializable;
+
+class Score implements Serializable, Comparable<Score> {
     private String name;
     private int score;
     private int seconds;
     private boolean wallCollision;
-    private double finalScore;
+    private int finalScore;
 
     Score(String name, int score, int seconds, boolean wallCollision) {
         this.name = name;
@@ -19,7 +21,7 @@ class Score {
     }
 
     void addScore() {
-        this.score += 10;
+        this.score += 1;
     }
 
     String getName() {
@@ -27,7 +29,6 @@ class Score {
     }
 
     int getScore() {
-
         return score;
     }
 
@@ -38,4 +39,18 @@ class Score {
     boolean isWallCollision() {
         return wallCollision;
     }
+
+    int getFinalScore() {
+        return finalScore;
+    }
+
+    void setFinalScore(int finalScore) {
+        this.finalScore = finalScore;
+    }
+
+    public int compareTo(Score score) {
+        int compareScore = ((Score) score).getFinalScore();
+        return this.finalScore - compareScore;
+    }
+
 }
